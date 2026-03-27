@@ -241,11 +241,13 @@ namespace OpenHardwareMonitorApi
         float usage_max = 0;
         for (int i = 0; i < hardware->Sensors->Length; i++)
         {
-            //找到负载 (取所有负载传感器的最大值，与任务管理器显示方式一致)
             if (hardware->Sensors[i]->SensorType == SensorType::Load)
             {
+                String^ name = hardware->Sensors[i]->Name;
+                // 메모리 컨트롤러/버스 센서는 제외 (작업 관리자 표시 방식과 일치)
+                if (name->Contains(L"Memory") || name->Contains(L"Bus"))
+                    continue;
                 float cur_gpu_usage = Convert::ToDouble(hardware->Sensors[i]->Value);
-                //计算最大值
                 if (cur_gpu_usage > usage_max)
                     usage_max = cur_gpu_usage;
             }
